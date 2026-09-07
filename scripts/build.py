@@ -1,5 +1,5 @@
 from pathlib import Path
-import json, html
+import json, html, shutil
 ROOT=Path(__file__).resolve().parent.parent
 OUT=ROOT/'dist'
 C=json.loads((ROOT/'site-config.json').read_text())
@@ -85,6 +85,18 @@ page('404/','Sayfa Bulunamadı','Aradığınız sayfaya ulaşılamadı. Diyarbak
 (OUT/'404.html').write_text((OUT/'404/index.html').read_text().replace('<meta name="theme-color"','<meta name="robots" content="noindex"><meta name="theme-color"'))
 (OUT/'404/index.html').unlink();(OUT/'404').rmdir();PAGES.remove('404/')
 (OUT/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+DOMAIN+'/'+p+'</loc></url>' for p in PAGES)+'</urlset>')
-(OUT/'robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: '+DOMAIN+'/sitemap.xml\n')
+(OUT/'robots.txt').write_text('User-agent: *\nAllow: /\nDisallow: /dist/\nDisallow: /scripts/\n\nSitemap: '+DOMAIN+'/sitemap.xml\n')
 (OUT/'.nojekyll').touch()
-print('Generated',len(PAGES),'pages for',DOMAIN)
+# Support both GitHub Pages branch-root publishing and the dist workflow.
+# Copy only generated public files; keep the user's root domain record intact.
+if (ROOT/'CNAME').exists():
+ shutil.copy2(ROOT/'CNAME', OUT/'CNAME')
+for route in PAGES:
+ relative=Path(route)/'index.html' if route else Path('index.html')
+ target=ROOT/relative
+ target.parent.mkdir(parents=True,exist_ok=True)
+ shutil.copy2(OUT/relative,target)
+for filename in ['404.html','sitemap.xml','robots.txt','.nojekyll']:
+ shutil.copy2(OUT/filename,ROOT/filename)
+shutil.copytree(OUT/'assets',ROOT/'assets',dirs_exist_ok=True)
+print('Generated',len(PAGES),'pages in dist and repository root for',DOMAIN)

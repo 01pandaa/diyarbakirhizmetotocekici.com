@@ -22,15 +22,14 @@ python scripts/build.py
 
 ## GitHub Pages / alan adı
 
-1. Repository Settings → Pages → Source bölümünde **GitHub Actions** seçin.
-2. Actions → Publish website iş akışını çalıştırın; başarılı yayımlamayı bekleyin.
-3. Pages → Custom domain alanına GoDaddy’den alınan **tam alan adını** girin.
-4. GitHub Pages ekranı ve güncel resmi GitHub belgelerindeki DNS kayıtlarını GoDaddy DNS paneline uygulayın. Mevcut e-posta MX/TXT kayıtlarını silmeyin.
-5. DNS doğrulaması tamamlandıktan sonra HTTPS'i etkinleştirin.
-6. Alan adı `site-config.json` içindekinden farklıysa dosyayı güncelleyin, `python scripts/build.py` çalıştırıp sonuçları gönderin. `dist/CNAME` mevcutsa aynı alan adıyla güncelleyin.
-7. Site açıldıktan sonra Google Search Console’da alan adını doğrulayın ve `/sitemap.xml` gönderin. İndekslenme ve sıralama garantisi yoktur.
+Site hem depo kökünden hem de `dist/` klasörünü yayımlayan Actions iş akışından çalışır. `python scripts/build.py` iki konumdaki çıktıyı birlikte günceller.
 
-GitHub Pages proje alt yolu yerine özel alan adında çalışacak şekilde kök bağlantılar kullanılır. Özel alan adı bağlanmadan GitHub proje alt yolunda varlık bağlantıları çalışmayabilir. Sites özel önizlemesi kök adreste çalışır ve müşteriye açık alan adı yayınının yerine geçmez.
+- Mevcut **Deploy from a branch → main → / (root)** ayarı kullanılabilir. Kök `index.html` tasarımı açar; `.nojekyll` ile statik dosyalar doğrudan sunulur.
+- Alternatif olarak Source bölümünden **GitHub Actions** seçilebilir. İş akışı `dist/` çıktısını yayımlar.
+- `CNAME` içindeki mevcut özel alan adı korunur ve üretimde `dist/CNAME` dosyasına da kopyalanır.
+- Alan adı değişirse `CNAME` ve `site-config.json` birlikte güncellenmeli, sayfalar yeniden üretilmelidir.
+- GoDaddy DNS kayıtları ve HTTPS doğrulaması GitHub Pages ekranından izlenir. E-posta MX/TXT kayıtları korunmalıdır.
+- Site açıldıktan sonra Google Search Console’da alan adını doğrulayın ve `/sitemap.xml` gönderin. İndekslenme ve sıralama garantisi yoktur.
 
 ## Teslim öncesi firma doğrulaması
 
